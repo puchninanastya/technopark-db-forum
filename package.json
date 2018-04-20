@@ -1,0 +1,29 @@
+{
+  "name": "technopark-db-forum",
+  "version": "1.0.0",
+  "description": "Project for Technopark Mail.ru database course, forum API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puchninanastya/technopark-db-forum.git"
+  },
+  "keywords": [
+    "technopark",
+    "databases",
+    "nodejs",
+    "api",
+    "posgresql"
+  ],
+  "author": "Anastasiya Puchnina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/puchninanastya/technopark-db-forum/issues"
+  },
+  "homepage": "https://github.com/puchninanastya/technopark-db-forum#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
