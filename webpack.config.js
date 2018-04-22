@@ -12,7 +12,7 @@ module.exports = {
     },
 
     devServer: {
-        contentBase: './dist'
+        contentBase: path.resolve(__dirname, 'dist')
     },
 
     target: 'node',

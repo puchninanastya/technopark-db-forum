@@ -4,8 +4,8 @@
   "description": "Project for Technopark Mail.ru database course, forum API",
   "main": "app.js",
   "scripts": {
-    "webpack-dev": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "start": "node ./built/bundle.js"
+    "webpack-dev": "webpack --config ./webpack.config.js --mode development",
+    "start": "node ./dist/bundle.js"
   },
   "repository": {
     "type": "git",
