@@ -5,6 +5,7 @@ import usersController from '../controllers/user-controller';
 var usersRouter = express.Router();
 
 usersRouter.get('/:nickname/profile', usersController.getUser);
+usersRouter.post('/:nickname/profile', usersController.updateUser);
 usersRouter.post('/:nickname/create', usersController.createUser);
 
 export default usersRouter;
