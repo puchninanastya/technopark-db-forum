@@ -1,6 +1,6 @@
 var express = require('express');
 
-import usersController from '../controllers/user-controller';
+import usersController from '../controllers/users-controller';
 
 var usersRouter = express.Router();
 
