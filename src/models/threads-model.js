@@ -52,4 +52,27 @@ export default new class ThreadsModel {
         }
     }
 
+    async getThreadsByForumSlug(forumSlug, getParams) {
+        try {
+            // pre-format WHERE conditions
+            let whereCondition;
+            if (getParams.since && getParams.desc) {
+                whereCondition = this._dbContext.pgp.as.format(` WHERE forum_slug = $1
+                AND created <= $2`, [forumSlug, getParams.since]);
+            } else if (getParams.since && !getParams.desc) {
+                whereCondition = this._dbContext.pgp.as.format(` WHERE forum_slug = $1
+                AND created >= $2`, [forumSlug, getParams.since]);
+            } else {
+                whereCondition = this._dbContext.pgp.as.format(` WHERE forum_slug = $1`, [forumSlug]);
+            }
+            return await this._dbContext.db.manyOrNone(`SELECT * FROM threads $1:raw
+                ORDER BY $2:raw LIMIT $3`, [
+                    whereCondition.toString(),
+                    (getParams.desc ? 'created DESC' : 'created ASC'),
+                    getParams.limit]);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
 }
