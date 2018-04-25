@@ -3,6 +3,7 @@ CREATE EXTENSION IF NOT EXISTS CITEXT;
 DROP Table IF EXISTS users CASCADE;
 DROP Table IF EXISTS forums CASCADE;
 DROP Table IF EXISTS threads CASCADE;
+DROP Table IF EXISTS posts CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id          BIGSERIAL   PRIMARY KEY,
@@ -33,4 +34,18 @@ CREATE TABLE IF NOT EXISTS threads (
     title           VARCHAR                     NOT NULL,
     message         VARCHAR                     NOT NULL,
     votes           INTEGER                     DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+    id              BIGSERIAL                   PRIMARY KEY,
+    author_id       BIGSERIAL                   NOT NULL REFERENCES users(id),
+    author_nickname CITEXT                      NOT NULL REFERENCES users(nickname),
+    forum_id        BIGSERIAL                   NOT NULL REFERENCES forums(id),
+    forum_slug      CITEXT                      NOT NULL REFERENCES forums(slug),
+    thread_id       BIGSERIAL                   NOT NULL REFERENCES forums(id),
+    thread_slug     CITEXT                      REFERENCES forums(slug),
+    parent          BIGSERIAL                   REFERENCES posts(id),
+    created         TIMESTAMP WITH TIME ZONE    DEFAULT NOW(),
+    isEdited        BOOLEAN                     DEFAULT FALSE,
+    message         VARCHAR                     NOT NULL
 );

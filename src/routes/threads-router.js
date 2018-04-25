@@ -4,7 +4,6 @@ import threadsController from '../controllers/threads-controller';
 
 var threadsRouter = express.Router();
 
-// threadsRouter.post('/create', threadsController.createForum);
-// threadsRouter.get('/:slug/details', threadsController.getForumDetails);
+threadsRouter.post('/:slug_or_id/create', threadsController.createPost);
 
 export default threadsRouter;
