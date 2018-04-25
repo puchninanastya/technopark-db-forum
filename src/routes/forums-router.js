@@ -6,5 +6,6 @@ var forumsRouter = express.Router();
 
 forumsRouter.post('/create', forumsController.createForum);
 forumsRouter.get('/:slug/details', forumsController.getForumDetails);
+forumsRouter.post('/:slug/create', forumsController.createThreadForForum);
 
 export default forumsRouter;

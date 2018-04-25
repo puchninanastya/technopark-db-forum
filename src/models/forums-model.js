@@ -1,6 +1,6 @@
 /**
- * Users model.
- * @module models/users-model
+ * Forums model.
+ * @module models/forums-model
  */
 
 import dbConfig from '../db-config';
@@ -10,7 +10,7 @@ const PQ = require('pg-promise').ParameterizedQuery;
 export default new class ForumsModel {
 
     /**
-     * Create an Users model.
+     * Create an Forums model.
      */
     constructor() {
         this._dbContext = dbConfig;
@@ -23,7 +23,7 @@ export default new class ForumsModel {
             data: null
         };
         try {
-            const createForumQuery = new PQ(`INSERT INTO forums (slug, title, user_id, user_nickname) 
+            const createForumQuery = new PQ(`INSERT INTO forums (slug, title, owner_id, owner_nickname) 
                 VALUES ($1, $2, $3, $4) RETURNING *`);
             createForumQuery.values = [forumData.slug, forumData.title, userData.id, userData.nickname];
             result.data = await this._dbContext.db.one(createForumQuery);
@@ -39,6 +39,16 @@ export default new class ForumsModel {
         try {
             const getForumQuery = new PQ(`SELECT * FROM forums WHERE slug = $1`, [slug]);
             return await this._dbContext.db.oneOrNone(getForumQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    async getForumIdBySlug(slug) {
+        try {
+            const getForumQuery = new PQ(`SELECT id FROM forums WHERE slug = $1`, [slug]);
+            let forumQueryResult = await this._dbContext.db.oneOrNone(getForumQuery);
+            return forumQueryResult['id'];
         } catch (error) {
             console.log('ERROR: ', error.message || error);
         }
