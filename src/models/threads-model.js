@@ -16,6 +16,14 @@ export default new class ThreadsModel {
         this._dbContext = dbConfig;
     }
 
+    /**
+     * Add new thread to forum.
+     * @param threadData - object of thread data
+     * @param userData - thread's author object
+     * @param forumData - object of thread's forum with id and slug fields
+     * @return created thread if successful query
+     * @return error message if unsuccessful query
+     */
     async createThread(threadData, userData, forumData) {
         let result = {
             isSuccess: false,
@@ -43,6 +51,12 @@ export default new class ThreadsModel {
         return result;
     }
 
+    /**
+     * Get thread by slug.
+     * @param slug - thread's slug (human-readable name for url)
+     * @return thread's object if thread with such slug exists
+     * @return empty object if no threads with such slug
+     */
     async getThreadBySlug(slug) {
         try {
             const getThreadQuery = new PQ(`SELECT * FROM threads WHERE slug = $1`, [slug]);
@@ -52,6 +66,13 @@ export default new class ThreadsModel {
         }
     }
 
+    /**
+     * Get threads by forum slug.
+     * @param forumSlug - forum's slug to find forum's threads
+     * @param getParams - additional params for getting threads (desc for sort, since datetime and search limit)
+     * @return array of found threads if threads for forum with such slug exist
+     * @return empty array if no threads for forum with such slug
+     */
     async getThreadsByForumSlug(forumSlug, getParams) {
         try {
             // pre-format WHERE conditions

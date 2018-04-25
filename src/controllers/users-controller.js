@@ -6,7 +6,7 @@ export default new class UsersController {
         let nickname = req.params['nickname'];
         let userData = req.body;
 
-        let existingUser = await usersModel.getUserByNicknameOrEmail(nickname, userData.email);
+        let existingUser = await usersModel.getUsersByNicknameOrEmail(nickname, userData.email);
         if (existingUser.length > 0) {
             return res.status(409).json(existingUser);
         }

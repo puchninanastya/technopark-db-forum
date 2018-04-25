@@ -26,6 +26,13 @@ export default new class UsersModel {
             ], {table: 'users'});
     }
 
+    /**
+     * Add new user.
+     * @param nickname - user's nickname
+     * @param userData - object of additional user data
+     * @return created user if successful query
+     * @return error message if unsuccessful query
+     */
     async createUser(nickname, userData) {
         let result = {
             isSuccess: false,
@@ -45,7 +52,14 @@ export default new class UsersModel {
         return result;
     }
 
-    async getUserByNicknameOrEmail(nickname, email) {
+    /**
+     * Get users by nickname or email.
+     * @param nickname - user's nickname
+     * @param email - user's email
+     * @return array of found users if users with such email or nickname exist
+     * @return empty array if no users with such email or nickname
+     */
+    async getUsersByNicknameOrEmail(nickname, email) {
         try {
             const getUserQuery = new PQ(`SELECT * FROM users WHERE nickname = $1 OR email = $2`);
             getUserQuery.values = [nickname, email];
@@ -55,6 +69,12 @@ export default new class UsersModel {
         }
     }
 
+    /**
+     * Get user by nickname.
+     * @param nickname - user's nickname
+     * @return user's object if user with such nickname exists
+     * @return empty object if no users with such nickname
+     */
     async getUserByNickname(nickname) {
         try {
             const getUserQuery = new PQ(`SELECT * FROM users WHERE nickname = $1`, [nickname]);
@@ -64,6 +84,13 @@ export default new class UsersModel {
         }
     }
 
+    /**
+     * Update user data.
+     * @param nickname - user's nickname
+     * @param userData - object of additional user data (may consist not of all fields)
+     * @return updated user if successful query
+     * @return error message if unsuccessful query
+     */
     async updateUser(nickname, userData) {
         try {
             let updateUserQuery = this._dbContext.pgp.helpers.update(userData, this._updateUserCS,

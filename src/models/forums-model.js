@@ -16,6 +16,13 @@ export default new class ForumsModel {
         this._dbContext = dbConfig;
     }
 
+    /**
+     * Add new forum.
+     * @param forumData - object of forum data
+     * @param userData - forum owner's user object
+     * @return created forum if successful query
+     * @return error message if unsuccessful query
+     */
     async createForum(forumData, userData) {
         let result = {
             isSuccess: false,
@@ -35,6 +42,12 @@ export default new class ForumsModel {
         return result;
     }
 
+    /**
+     * Get forum by slug.
+     * @param slug - forum's slug (human-readable name for url)
+     * @return forum's object if forum with such slug exists
+     * @return empty object if no forums with such slug
+     */
     async getForumBySlug(slug) {
         try {
             const getForumQuery = new PQ(`SELECT * FROM forums WHERE slug = $1`, [slug]);
@@ -44,6 +57,12 @@ export default new class ForumsModel {
         }
     }
 
+    /**
+     * Get forum id by slug.
+     * @param slug - forum's slug (human-readable name for url)
+     * @return forum's id if forum with such slug exists
+     * @return undefined if no forums with such slug
+     */
     async getForumIdBySlug(slug) {
         try {
             const getForumQuery = new PQ(`SELECT id FROM forums WHERE slug = $1`, [slug]);
