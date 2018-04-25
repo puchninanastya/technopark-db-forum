@@ -13,7 +13,7 @@ export default new class ForumsModel {
      * Create an Users model.
      */
     constructor() {
-        this._dbContext = dbConfig.db;
+        this._dbContext = dbConfig;
     }
 
     async createForum(forumData, userData) {
@@ -26,7 +26,7 @@ export default new class ForumsModel {
             const createForumQuery = new PQ(`INSERT INTO forums (slug, title, user_id, user_nickname) 
                 VALUES ($1, $2, $3, $4) RETURNING *`);
             createForumQuery.values = [forumData.slug, forumData.title, userData.id, userData.nickname];
-            result.data = await this._dbContext.one(createForumQuery);
+            result.data = await this._dbContext.db.one(createForumQuery);
             result.isSuccess = true;
         } catch (error) {
             result.message = error.message;
@@ -36,20 +36,12 @@ export default new class ForumsModel {
     }
 
     async getForumBySlug(slug) {
-        let result = {
-            isSuccess: false,
-            message: '',
-            data: null
-        };
         try {
             const getForumQuery = new PQ(`SELECT * FROM forums WHERE slug = $1`, [slug]);
-            result.data = await this._dbContext.oneOrNone(getForumQuery);
-            result.isSuccess = true;
+            return await this._dbContext.db.oneOrNone(getForumQuery);
         } catch (error) {
-            result.message = error.message;
             console.log('ERROR: ', error.message || error);
         }
-        return result;
     }
 
 }

@@ -52,6 +52,13 @@ export default new class UsersController {
         }
 
         console.log('OK updated');
-        res.json(updatedUser);
+        if (updatedUser === true) {
+            console.log('in empty update');
+            res.json(existingUser);
+        } else {
+            console.log('in ok update');
+            res.json(updatedUser);
+        }
+
     }
 }

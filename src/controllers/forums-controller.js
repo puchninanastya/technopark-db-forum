@@ -15,16 +15,31 @@ export default new class ForumsController {
 
         let existingForum = await forumsModel.getForumBySlug(forumData.slug);
         console.log('existing forum: ', existingForum);
-        if (!existingForum) {
-            return res.status(409).json(existingForum);
+        if (existingForum) {
+            return res.status(409).json(
+                {slug: existingForum.slug, title: existingForum.title, user: existingForum.user_nickname});
         }
 
         let createForumResult = await forumsModel.createForum(forumData, user);
         console.log('createForumResult: ', createForumResult);
         if (createForumResult.isSuccess) {
-            res.status(201).json(forumData);
+            res.status(201).json(
+                {slug: createForumResult.data.slug, title: createForumResult.data.title,
+                    user: createForumResult.data.user_nickname});
         } else {
             res.status(500).end();
         }
+    }
+
+    async getForumDetails(req, res) {
+        let slug = req.params['slug'];
+
+        let existingForum = await forumsModel.getForumBySlug(slug);
+        console.log('existing forum: ', existingForum);
+        if (!existingForum) {
+            return res.status(404).json({message: "Can't find forum with slug " + slug});
+        }
+
+        res.json({slug: existingForum.slug, title: existingForum.title, user: existingForum.user_nickname});
     }
 }

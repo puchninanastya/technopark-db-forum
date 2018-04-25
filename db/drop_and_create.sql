@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS forums (
     id              BIGSERIAL   PRIMARY KEY,
-    slug            VARCHAR     UNIQUE NOT NULL,
+    slug            CITEXT      UNIQUE NOT NULL,
     title           VARCHAR     NOT NULL,
     user_id         BIGSERIAL   NOT NULL REFERENCES users(id),
     user_nickname   CITEXT      NOT NULL REFERENCES users(nickname),
