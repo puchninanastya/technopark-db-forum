@@ -28,12 +28,13 @@ export default new class PostsModel {
         try {
             const createPostQuery = new PQ(`INSERT INTO posts (
                 author_id, author_nickname, forum_id, forum_slug, thread_id, thread_slug,
-                created, message)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`);
+                created, message, parent)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`);
             console.log('thread data : ', thread );
             createPostQuery.values = [
                 user.id, user.nickname, thread.forum_id, thread.forum_slug,
-                thread.id, thread.slug, postData.created, postData.message ];
+                thread.id, thread.slug, postData.created, postData.message,
+                postData.parent ? postData.parent : null];
             result.data = await this._dbContext.db.one(createPostQuery);
             result.isSuccess = true;
         } catch (error) {

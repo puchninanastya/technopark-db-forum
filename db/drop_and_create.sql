@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS forums (
     id              BIGSERIAL   PRIMARY KEY,
     slug            CITEXT      UNIQUE NOT NULL,
     title           VARCHAR     NOT NULL,
-    owner_id        BIGSERIAL   NOT NULL REFERENCES users(id),
+    owner_id        BIGINT      NOT NULL REFERENCES users(id),
     owner_nickname  CITEXT      NOT NULL REFERENCES users(nickname),
     posts           INTEGER     DEFAULT 0,
     threads         INTEGER     DEFAULT 0
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS forums (
 CREATE TABLE IF NOT EXISTS threads (
     id              BIGSERIAL                   PRIMARY KEY,
     slug            CITEXT                      UNIQUE,
-    author_id       BIGSERIAL                   NOT NULL REFERENCES users(id),
+    author_id       BIGINT                      NOT NULL REFERENCES users(id),
     author_nickname CITEXT                      NOT NULL REFERENCES users(nickname),
-    forum_id        BIGSERIAL                   NOT NULL REFERENCES forums(id),
+    forum_id        BIGINT                      NOT NULL REFERENCES forums(id),
     forum_slug      CITEXT                      NOT NULL REFERENCES forums(slug),
     created         TIMESTAMP WITH TIME ZONE    DEFAULT NOW(),
     title           VARCHAR                     NOT NULL,
@@ -42,21 +42,21 @@ CREATE TABLE IF NOT EXISTS posts (
     id                  BIGSERIAL                   PRIMARY KEY,
     author_id           BIGSERIAL                   NOT NULL REFERENCES users(id),
     author_nickname     CITEXT                      NOT NULL REFERENCES users(nickname),
-    forum_id            BIGSERIAL                   NOT NULL REFERENCES forums(id),
+    forum_id            BIGINT                      NOT NULL REFERENCES forums(id),
     forum_slug          CITEXT                      NOT NULL REFERENCES forums(slug),
-    thread_id           BIGSERIAL                   NOT NULL REFERENCES threads(id),
+    thread_id           BIGINT                      NOT NULL REFERENCES threads(id),
     thread_slug         CITEXT                      REFERENCES threads(slug),
     created             TIMESTAMP WITH TIME ZONE    DEFAULT NOW(),
     isEdited            BOOLEAN                     DEFAULT FALSE,
     message             VARCHAR                     NOT NULL,
-    parent              BIGSERIAL                   REFERENCES posts(id),
+    parent              BIGINT                      NULL REFERENCES posts(id),
     path_to_this_post   LTREE
 );
 
 CREATE TABLE IF NOT EXISTS votes (
     id              BIGSERIAL   PRIMARY KEY,
     nickname        CITEXT      NOT NULL REFERENCES users(nickname),
-    thread          BIGSERIAL   NOT NULL REFERENCES threads(id),
+    thread          BIGINT      NOT NULL REFERENCES threads(id),
     voice           INTEGER     DEFAULT 0,
     CONSTRAINT unique_vote UNIQUE(nickname, thread)
 );

@@ -9,15 +9,19 @@ export default new class PostsSerializer {
     /**
      * Serialize one posts object to API output format.
      * @param post - object to serialize
-     * @return serialized thread object
+     * @return Object - serialized post object
      */
     serialize_post(post) {
-        return {
+        let postResult = {
             id: Number(post.id), author: post.author_nickname,
             forum: post.forum_slug, thread: Number(post.thread_id),
             isEdited: post.isEdited,
             created: post.created, message: post.message
         };
+        if (post.parent !== post.id) {
+            postResult.parent = Number(post.parent);
+        }
+        return postResult;
     }
 
     /**
@@ -30,12 +34,16 @@ export default new class PostsSerializer {
             return [];
         }
         return posts.map(function(post) {
-            return {
+            let postResult = {
                 id: Number(post.id), author: post.author_nickname,
                 forum: post.forum_slug, thread: Number(post.thread_id),
                 isEdited: post.isEdited,
                 created: post.created, message: post.message
             };
+            if (post.parent !== post.id) {
+                postResult.parent = Number(post.parent);
+            }
+            return postResult;
         });
     }
 
