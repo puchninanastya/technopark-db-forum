@@ -19,12 +19,12 @@ export default new class ThreadsModel {
     /**
      * Add new thread to forum.
      * @param threadData - object of thread data
-     * @param userData - thread's author object
-     * @param forumData - object of thread's forum with id and slug fields
+     * @param user - thread's author object
+     * @param forum - object of thread's forum with id and slug fields
      * @return created thread if successful query
      * @return error message if unsuccessful query
      */
-    async createThread(threadData, userData, forumData) {
+    async createThread(threadData, user, forum) {
         let result = {
             isSuccess: false,
             message: '',
@@ -39,8 +39,8 @@ export default new class ThreadsModel {
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`);
             createThreadQuery.values = [
                 threadData.slug,
-                userData.id, userData.nickname,
-                forumData.id, forumData.slug,
+                user.id, user.nickname,
+                forum.id, forum.slug,
                 threadData.created, threadData.title, threadData.message];
             result.data = await this._dbContext.db.one(createThreadQuery);
             result.isSuccess = true;
@@ -49,6 +49,21 @@ export default new class ThreadsModel {
             console.log('ERROR: ', error.message || error);
         }
         return result;
+    }
+
+    /**
+     * Get thread by id.
+     * @param id - thread's id
+     * @return thread's object if thread with such id exists
+     * @return empty object if no threads with such id
+     */
+    async getThreadById(id) {
+        try {
+            const getThreadQuery = new PQ(`SELECT * FROM threads WHERE id = $1`, [id]);
+            return await this._dbContext.db.oneOrNone(getThreadQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
     }
 
     /**

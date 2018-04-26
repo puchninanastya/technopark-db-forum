@@ -45,7 +45,10 @@ export default new class ForumsController {
     async createThreadForForum(req, res) {
         let threadData = req.body;
         let authorNickname = threadData.author;
-        let forumData = {slug: req.params['slug']};
+        let forumSlug = req.params['slug'];
+        if (/^\d+$/.test(forumSlug)) {
+            return res.status(400).json({message: "Slug can not contain only digits "});
+        }
 
         let user = await usersModel.getUserByNickname(authorNickname);
         if (!user) {
@@ -54,15 +57,15 @@ export default new class ForumsController {
 
         let existingThread = await threadsModel.getThreadBySlug(threadData.slug);
         if (existingThread) {
-            return res.status(409).json(existingThread);
+            return res.status(409).json(threadsSerializer.serialize_thread(existingThread));
         }
 
-        forumData['id'] = await forumsModel.getForumIdBySlug(forumData.slug);
-        if (!forumData.id) {
-            return res.status(404).json({message: "Can't find forum with slug " + forumData.slug});
+        let forum = await forumsModel.getForumBySlug(forumSlug);
+        if (!forum) {
+            return res.status(404).json({message: "Can't find forum with slug " + forumSlug});
         }
 
-        let createThreadResult = await threadsModel.createThread(threadData, user, forumData);
+        let createThreadResult = await threadsModel.createThread(threadData, user, forum);
         if (createThreadResult.isSuccess) {
             res.status(201).json(threadsSerializer.serialize_thread(createThreadResult.data));
         } else {
