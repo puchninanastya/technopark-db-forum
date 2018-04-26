@@ -42,6 +42,7 @@ export default new class ThreadsController {
             }
             console.log('user: ', user);
 
+
             postData['created'] = createdDatetime;
             console.log('post data: ', postData);
 
@@ -87,7 +88,7 @@ export default new class ThreadsController {
 
         let voiceValue = voteResult.data.voice;
         if (voteResult.data.existed) {
-            voiceValue = voiceValue == 1? voiceValue + 1 : voiceValue - 1;
+            voiceValue = voiceValue == 1 ? voiceValue + 1 : voiceValue - 1;
         }
 
         let updateThreadResult = await threadsModel.updateThreadVotes(thread, voiceValue);
@@ -99,6 +100,25 @@ export default new class ThreadsController {
     }
 
     async getThreadDetails(req, res) {
+
+        let thread;
+        if (/^\d+$/.test(req.params['slug_or_id'])) {
+            thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
+        } else {
+            thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
+        }
+
+        if (!thread) {
+            return res.status(404).json({message: "Can't find forum with slug or id " + req.params['slug_or_id']});
+        }
+        res.json(threadsSerializer.serialize_thread(thread));
+    }
+
+    async getThreadPosts(req, res) {
+        let getParams = [];
+        getParams['limit'] = req.query.limit ? parseInt(req.query.limit) : 100;
+        console.log('get params for get thread posts: ', getParams);
+
         let thread;
         if (/^\d+$/.test(req.params['slug_or_id'])) {
             thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
@@ -110,7 +130,16 @@ export default new class ThreadsController {
             return res.status(404).json({message: "Can't find forum with slug or id " + req.params['slug_or_id']});
         }
 
-        res.json(threadsSerializer.serialize_thread(thread));
+        let postsResult;
+        switch (req.query.sort) {
+            case 'tree':
+                return res.status(404).end();
+            case 'parent-tree':
+                return res.status(404).end();
+            default:
+                postsResult = await postsModel.getPostsByThreadIdFlat(thread.id, getParams);
+        }
+        res.json(postsSerializer.serialize_posts(postsResult));
     }
 
 }

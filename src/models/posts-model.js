@@ -44,4 +44,22 @@ export default new class PostsModel {
         return result;
     }
 
+    /**
+     * Get posts by thread id flat sorted by created datetime.
+     * @param threadId - thread's id to find thread's posts
+     * @param getParams - additional params for getting threads (desc for sort, since datetime and search limit)
+     * @return array of found posts if posts for thread with such id exist
+     * @return empty array if no posts for thread with such slug
+     */
+    async getPostsByThreadIdFlat(threadId, getParams) {
+        try {
+            return await this._dbContext.db.manyOrNone(`SELECT * FROM posts WHERE thread_id = $1
+                ORDER BY created, id LIMIT $2`, [
+                threadId,
+                getParams.limit]);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
 }
