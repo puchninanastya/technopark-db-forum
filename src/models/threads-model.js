@@ -111,4 +111,28 @@ export default new class ThreadsModel {
         }
     }
 
+    /**
+     * Update votes for thread.
+     */
+    async updateThreadVotes(thread, voiceValue) {
+        let result = {
+            isSuccess: false,
+            message: '',
+            data: null
+        };
+        try {
+            const updateVotesQuery = new PQ(`UPDATE threads SET 
+                votes = votes + $1
+                WHERE id = $2
+                RETURNING *`);
+            updateVotesQuery.values = [voiceValue, thread.id];
+            result.data = await this._dbContext.db.one(updateVotesQuery);
+            result.isSuccess = true;
+        } catch (error) {
+            result.message = error.message;
+            console.log('ERROR: ', error.message || error);
+        }
+        return result;
+    }
+
 }

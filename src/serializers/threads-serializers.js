@@ -16,7 +16,8 @@ export default new class ThreadsSerializer {
             id: Number(thread.id), author: thread.author_nickname,
             slug: thread.slug,
             forum: thread.forum_slug, created: thread.created,
-            title: thread.title, message: thread.message
+            title: thread.title, message: thread.message,
+            votes: thread.votes
         };
     }
 
@@ -34,7 +35,8 @@ export default new class ThreadsSerializer {
                 id: Number(thread.id), author: thread.author_nickname,
                 slug: thread.slug,
                 forum: thread.forum_slug, created: thread.created,
-                title: thread.title, message: thread.message
+                title: thread.title, message: thread.message,
+                votes: thread.votes
             };
         });
     }

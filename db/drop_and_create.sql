@@ -5,6 +5,7 @@ DROP Table IF EXISTS users CASCADE;
 DROP Table IF EXISTS forums CASCADE;
 DROP Table IF EXISTS threads CASCADE;
 DROP Table IF EXISTS posts CASCADE;
+DROP Table IF EXISTS votes CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id          BIGSERIAL   PRIMARY KEY,
@@ -50,4 +51,12 @@ CREATE TABLE IF NOT EXISTS posts (
     message             VARCHAR                     NOT NULL,
     parent              BIGSERIAL                   REFERENCES posts(id),
     path_to_this_post   LTREE
+);
+
+CREATE TABLE IF NOT EXISTS votes (
+    id              BIGSERIAL   PRIMARY KEY,
+    nickname        CITEXT      NOT NULL REFERENCES users(nickname),
+    thread          BIGSERIAL   NOT NULL REFERENCES threads(id),
+    voice           INTEGER     DEFAULT 0,
+    CONSTRAINT unique_vote UNIQUE(nickname, thread)
 );
