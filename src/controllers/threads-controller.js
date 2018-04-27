@@ -133,10 +133,13 @@ export default new class ThreadsController {
         let postsResult;
         switch (req.query.sort) {
             case 'tree':
-                return res.status(404).end();
+                console.log('TREE SORT');
+                postsResult = await postsModel.getPostsByThreadIdTree(thread.id, getParams);
+                break;
             case 'parent-tree':
                 return res.status(404).end();
             default:
+                console.log('FLAT SORT');
                 postsResult = await postsModel.getPostsByThreadIdFlat(thread.id, getParams);
         }
         res.json(postsSerializer.serialize_posts(postsResult));

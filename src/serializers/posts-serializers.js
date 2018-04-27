@@ -20,6 +20,7 @@ export default new class PostsSerializer {
         };
         if (post.parent !== post.id) {
             postResult.parent = Number(post.parent);
+            postResult.path = post.path_to_this_post;
         }
         return postResult;
     }
@@ -42,6 +43,7 @@ export default new class PostsSerializer {
             };
             if (post.parent !== post.id) {
                 postResult.parent = Number(post.parent);
+                postResult.path_to_this_post = post.path_to_this_post;
             }
             return postResult;
         });
