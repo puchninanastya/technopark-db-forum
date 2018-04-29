@@ -41,6 +41,8 @@ USER root
 # Сборка проекта
 #
 
+RUN apt-get install -y nodejs nodejs-legacy npm
+
 COPY . /src
 WORKDIR /src
 
