@@ -3,6 +3,8 @@
  * @module modules/db
  */
 
+const path = require('path');
+
 const pgp = require('pg-promise')({
     capSQL: true // if you want all generated SQL capitalized
 });
@@ -17,6 +19,8 @@ export default class DatabaseModule {
     constructor(connOptions = {}) {
         this._pgp = pgp;
         this._db = pgp(connOptions); // database instance
+
+        this._dropAndCreateSql = this.sql('./db/drop_and_create.sql');
     }
 
     get db() {
@@ -25,6 +29,22 @@ export default class DatabaseModule {
 
     get pgp() {
         return this._pgp;
+    }
+
+    async initializeDatabase() {
+        try {
+            await db.any(this._dropAndCreateSql);
+        } catch (error) {
+            if (error instanceof this._pgp.errors.QueryFileError) {
+                console.error('ERROR: ', error);
+            }
+        }
+    }
+
+    // Helper for linking to external query files:
+    sql(file) {
+        const fullPath = path.join(__dirname, file);
+        return new pgp.QueryFile(fullPath, {minify: true});
     }
 
 }

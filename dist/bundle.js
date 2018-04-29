@@ -157,7 +157,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mod
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_db__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/db */ \"./src/modules/db.js\");\n/**\n * Database configuration for database module\n */\n\n\n\n// Database connection details;\nconst connOptions = {\n    host: 'localhost', // localhost is the default\n    port: 5432, // 5432 is the default;\n    database: 'docker',\n    user: 'docker',\n    password: 'docker'\n};\n\nlet dbConfig = new _modules_db__WEBPACK_IMPORTED_MODULE_0__[\"default\"](connOptions);\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (dbConfig);\n\n\n//# sourceURL=webpack:///./src/db-config.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_db__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/db */ \"./src/modules/db.js\");\n/**\n * Database configuration for database module\n */\n\n\n\n// Database connection details;\nconst connOptions = {\n    host: 'localhost', // localhost is the default\n    port: 5432, // 5432 is the default;\n    database: 'docker',\n    user: 'docker',\n    password: 'docker'\n};\n\nlet dbConfig = new _modules_db__WEBPACK_IMPORTED_MODULE_0__[\"default\"](connOptions);\n(async () => {\n    await dbConfig.initializeDatabase();\n})();\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (dbConfig);\n\n\n//# sourceURL=webpack:///./src/db-config.js?");
 
 /***/ }),
 
@@ -229,7 +229,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _db_
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return DatabaseModule; });\n/**\n * Database module.\n * @module modules/db\n */\n\nconst pgp = __webpack_require__(/*! pg-promise */ \"pg-promise\")({\n    capSQL: true // if you want all generated SQL capitalized\n});\n\n/** Class representing a Database module. */\nclass DatabaseModule {\n\n    /**\n     * Create an DB module.\n     * @param connOptions - options for database connections\n     */\n    constructor(connOptions = {}) {\n        this._pgp = pgp;\n        this._db = pgp(connOptions); // database instance\n    }\n\n    get db() {\n        return this._db;\n    }\n\n    get pgp() {\n        return this._pgp;\n    }\n\n}\n\n//# sourceURL=webpack:///./src/modules/db.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* WEBPACK VAR INJECTION */(function(__dirname) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return DatabaseModule; });\n/**\n * Database module.\n * @module modules/db\n */\n\nconst path = __webpack_require__(/*! path */ \"path\");\n\nconst pgp = __webpack_require__(/*! pg-promise */ \"pg-promise\")({\n    capSQL: true // if you want all generated SQL capitalized\n});\n\n/** Class representing a Database module. */\nclass DatabaseModule {\n\n    /**\n     * Create an DB module.\n     * @param connOptions - options for database connections\n     */\n    constructor(connOptions = {}) {\n        this._pgp = pgp;\n        this._db = pgp(connOptions); // database instance\n\n        this._dropAndCreateSql = this.sql('./db/drop_and_create.sql');\n    }\n\n    get db() {\n        return this._db;\n    }\n\n    get pgp() {\n        return this._pgp;\n    }\n\n    async initializeDatabase() {\n        try {\n            await db.any(this._dropAndCreateSql);\n        } catch (error) {\n            if (error instanceof this._pgp.errors.QueryFileError) {\n                console.error('ERROR: ', error);\n            }\n        }\n    }\n\n    // Helper for linking to external query files:\n    sql(file) {\n        const fullPath = path.join(__dirname, file);\n        return new pgp.QueryFile(fullPath, {minify: true});\n    }\n\n}\n/* WEBPACK VAR INJECTION */}.call(this, \"/\"))\n\n//# sourceURL=webpack:///./src/modules/db.js?");
 
 /***/ }),
 
@@ -371,6 +371,17 @@ eval("module.exports = require(\"express\");\n\n//# sourceURL=webpack:///externa
 /***/ (function(module, exports) {
 
 eval("module.exports = require(\"morgan\");\n\n//# sourceURL=webpack:///external_%22morgan%22?");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"path\");\n\n//# sourceURL=webpack:///external_%22path%22?");
 
 /***/ }),
 

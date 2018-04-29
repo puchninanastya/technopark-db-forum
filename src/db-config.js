@@ -14,5 +14,8 @@ const connOptions = {
 };
 
 let dbConfig = new DatabaseModule(connOptions);
+(async () => {
+    await dbConfig.initializeDatabase();
+})();
 
 export default dbConfig;

@@ -54,4 +54,4 @@ RUN npm install
 # Объявлем порт сервера
 EXPOSE 5000
 
-CMD service postgresql start && psql -h localhost -U docker -d docker -f ./db/drop_and_create.sql && npm start
+CMD service postgresql start && npm start
