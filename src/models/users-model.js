@@ -85,6 +85,41 @@ export default new class UsersModel {
     }
 
     /**
+     * Get users that created posts in forum.
+     * @param forum_id - forum's id, where to find users
+     * @param getParams - additional params for getting users (desc for sort, since datetime and search limit)
+     * @return array of found users that created posts in forum with such id
+     * @return empty array if no users posts in forum with such id
+     */
+    async getUsersFromForum(forum_id, getParams) {
+        try {
+            // pre-format WHERE conditions
+            let whereCondition;
+            if (getParams.since && getParams.desc) {
+                whereCondition = this._dbContext.pgp.as.format(` WHERE id IN 
+                (SELECT user_id FROM forum_users WHERE forum_id = $1)
+                AND nickname < $2 `, [forum_id, getParams.since]);
+            } else if (getParams.since && !getParams.desc) {
+                whereCondition = this._dbContext.pgp.as.format(`WHERE id IN 
+                (SELECT user_id FROM forum_users WHERE forum_id = $1)
+                AND nickname > $2 `, [forum_id, getParams.since]);
+            } else {
+                whereCondition = this._dbContext.pgp.as.format(` WHERE id IN 
+                (SELECT user_id FROM forum_users WHERE forum_id = $1)`, [forum_id]);
+            }
+            return await this._dbContext.db.manyOrNone(`
+                SELECT id, about, email, fullname, nickname 
+                FROM users $1:raw 
+                ORDER BY $2:raw LIMIT $3`,
+                [whereCondition.toString(),
+                (getParams.desc ? 'nickname DESC' : 'nickname ASC'),
+                getParams.limit]);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Update user data.
      * @param nickname - user's nickname
      * @param userData - object of additional user data (may consist not of all fields)

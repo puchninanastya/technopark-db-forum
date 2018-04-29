@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS forums CASCADE;
 DROP TABLE IF EXISTS threads CASCADE;
 DROP TABLE IF EXISTS posts CASCADE;
 DROP TABLE IF EXISTS votes CASCADE;
+DROP TABLE IF EXISTS forum_users CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id          BIGSERIAL   PRIMARY KEY,
@@ -60,6 +61,11 @@ CREATE TABLE IF NOT EXISTS votes (
     CONSTRAINT unique_vote UNIQUE(nickname, thread)
 );
 
+CREATE TABLE IF NOT EXISTS forum_users (
+	forum_id        BIGINT     NOT NULL REFERENCES forums(id),
+	user_id         BIGINT     NOT NULL REFERENCES users(id),
+	CONSTRAINT unique_user_in_forum UNIQUE (user_id, forum_id)
+);
 
 CREATE OR REPLACE FUNCTION add_path_to_post() RETURNS TRIGGER AS $add_path_to_post$
     DECLARE

@@ -98,4 +98,23 @@ export default new class ForumsController {
         res.json(threadsSerializer.serialize_threads(threads));
     }
 
+    async getForumUsers(req, res) {
+        let forumSlug = req.params['slug'];
+        // additional query params
+        let getParams = {};
+        getParams['desc'] = req.query.desc === 'true';
+        getParams['limit'] = req.query.limit ? parseInt(req.query.limit) : 100;
+        getParams['since'] = req.query.since;
+        console.log('getParams: ', getParams);
+
+        let existingForum = await forumsModel.getForumBySlug(forumSlug);
+        console.log('existingForum: ', existingForum);
+        if (!existingForum) {
+            return res.status(404).json({message: "Can't find forum with slug " + forumSlug});
+        }
+
+        let users = await usersModel.getUsersFromForum(existingForum.id, getParams);
+        res.json(users);
+    }
+
 }

@@ -8,5 +8,6 @@ forumsRouter.post('/create', forumsController.createForum);
 forumsRouter.get('/:slug/details', forumsController.getForumDetails);
 forumsRouter.post('/:slug/create', forumsController.createThreadForForum);
 forumsRouter.get('/:slug/threads', forumsController.getForumThreads);
+forumsRouter.get('/:slug/users', forumsController.getForumUsers);
 
 export default forumsRouter;

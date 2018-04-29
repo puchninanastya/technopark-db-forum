@@ -35,6 +35,13 @@ export default new class PostsModel {
                 thread.id, thread.slug, postData.created, postData.message,
                 postData.parent ? postData.parent : null,];
             result.data = await this._dbContext.db.one(createPostQuery);
+            // Add this user for forum's users table if not exists
+            console.log('INSERT IN FORUM_USERS:', await this._dbContext.db.oneOrNone(`
+            INSERT INTO forum_users (forum_id, user_id)
+                VALUES ($1, $2)
+                ON CONFLICT ON CONSTRAINT unique_user_in_forum DO NOTHING
+                RETURNING *`,
+                [thread.forum_id, user.id]));
             result.isSuccess = true;
         } catch (error) {
             result.message = error.message;
@@ -107,6 +114,7 @@ export default new class PostsModel {
     async getPostsByThreadIdParentTreeSort(threadId, getParams) {
         try {
             let subWhereCondition;
+            console.log('getParams parent sort: ', getParams);
             if (getParams.since && getParams.desc) {
                 subWhereCondition = this._dbContext.pgp.as.format(` WHERE parent IS NULL 
                 AND thread_id = $1  
@@ -123,13 +131,14 @@ export default new class PostsModel {
             }
             return await this._dbContext.db.manyOrNone(`
                 SELECT * FROM posts JOIN
-                (SELECT id AS sub_parent_id FROM posts $1:raw ORDER BY id LIMIT $4 ) AS sub 
+                (SELECT id AS sub_parent_id FROM posts $1:raw ORDER BY $5:raw LIMIT $4 ) AS sub 
                 ON (thread_id = $2 AND sub.sub_parent_id = path_to_this_post[1]) 
                 ORDER BY $3:raw`, [
                 subWhereCondition.toString(),
                 threadId,
                 (getParams.desc ? 'sub.sub_parent_id DESC, path_to_this_post ASC' : 'path_to_this_post ASC'),
-                getParams.limit]);
+                getParams.limit,
+                (getParams.desc ? 'id DESC ' : 'id ASC'),]);
         } catch (error) {
             console.log('ERROR: ', error.message || error);
         }
