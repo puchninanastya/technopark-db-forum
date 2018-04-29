@@ -4,6 +4,7 @@ import postsController from '../controllers/posts-controller';
 
 var postsRouter = express.Router();
 
-// postsRouter.post('/create', postsController.createPost);
+postsRouter.get('/:id/details', postsController.getPostDetails);
+postsRouter.post('/:id/details', postsController.updatePostDetails);
 
 export default postsRouter;

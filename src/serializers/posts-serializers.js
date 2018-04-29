@@ -11,16 +11,19 @@ export default new class PostsSerializer {
      * @param post - object to serialize
      * @return Object - serialized post object
      */
-    serialize_post(post) {
+    serialize_post(post, showAsDetail = false) {
         let postResult = {
             id: Number(post.id), author: post.author_nickname,
             forum: post.forum_slug, thread: Number(post.thread_id),
-            isEdited: post.isEdited,
+            isEdited: post.isedited,
             created: post.created, message: post.message
         };
         if (post.parent !== post.id) {
             postResult.parent = Number(post.parent);
             postResult.path = post.path_to_this_post;
+        }
+        if (showAsDetail) {
+            postResult = {post: postResult};
         }
         return postResult;
     }

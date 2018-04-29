@@ -4,6 +4,7 @@
  */
 
 import dbConfig from '../db-config';
+import {column_with_skip} from "../utils/db-helpers";
 const PQ = require('pg-promise').ParameterizedQuery;
 
 /** Class representing an Posts model. */
@@ -26,6 +27,16 @@ export default new class PostsModel {
             data: null
         };
         try {
+            // Check if parent post is in the same thread as new post
+            if (postData.parent) {
+                const getParentPostQuery = new PQ(`SELECT id FROM posts WHERE id = $1 AND thread_id = $2`);
+                getParentPostQuery.values = [postData.parent, thread.id];
+                let parentResult = await this._dbContext.db.oneOrNone(getParentPostQuery);
+                if (!parentResult) {
+                    result.message = '409';
+                    return result;
+                }
+            }
             const createPostQuery = new PQ(`INSERT INTO posts (
                 author_id, author_nickname, forum_id, forum_slug, thread_id, thread_slug,
                 created, message, parent)
@@ -48,6 +59,21 @@ export default new class PostsModel {
             console.log('ERROR: ', error.message || error);
         }
         return result;
+    }
+
+    /**
+     * Get post by id.
+     * @param id - post's id
+     * @return post's object if post with such id exists
+     * @return empty object if no posts with such id
+     */
+    async getPostById(id) {
+        try {
+            const getPostQuery = new PQ(`SELECT * FROM posts WHERE id = $1`, [id]);
+            return await this._dbContext.db.oneOrNone(getPostQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
     }
 
     /**
@@ -142,6 +168,34 @@ export default new class PostsModel {
         } catch (error) {
             console.log('ERROR: ', error.message || error);
         }
+    }
+
+    /**
+     * Update post.
+     * @param id - post's id
+     * @param postData - object of updated post data (may consist not of all fields)
+     * @return updated post if successful query
+     * @return error message if unsuccessful query
+     */
+    async updatePost(id, postData) {
+        let result = {
+            isSuccess: false,
+            message: '',
+            data: null
+        };
+        try {
+            const updatePostQuery = new PQ(`UPDATE posts SET 
+                message = $1, isEdited = True
+                WHERE id = $2
+                RETURNING *`);
+            updatePostQuery.values = [postData.message, id];
+            result.data = await this._dbContext.db.one(updatePostQuery);
+            result.isSuccess = true;
+        } catch (error) {
+            result.message = error.message;
+            console.log('ERROR: ', error.message || error);
+        }
+        return result;
     }
 
 }

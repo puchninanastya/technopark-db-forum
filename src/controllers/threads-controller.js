@@ -12,19 +12,24 @@ export default new class ThreadsController {
     async createPostsForThread(req, res) {
         let postsData = req.body;
 
+        let thread;
+        if (/^\d+$/.test(req.params['slug_or_id'])) {
+            console.log('in thread id');
+            thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
+        } else {
+            console.log('in thread slug');
+            thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
+        }
+        if (!thread) {
+            return res.status(404).json({message: "Can't find forum with slug or id " + req.params['slug_or_id']});
+        }
+        thread.id = Number(thread.id);
+
         if (Array.isArray(postsData) && !postsData.length) {
             return res.status(201).json(postsData);
         } else if (!Array.isArray(postsData)) {
             return res.status(400).json({message: "Request data must be an array."});
         }
-
-        let thread;
-        if (/^\d+$/.test(req.params['slug_or_id'])) {
-            thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
-        } else {
-            thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
-        }
-        thread.id = Number(thread.id);
 
         let postsResult = [];
         let createdDatetime = new Date();
@@ -40,6 +45,8 @@ export default new class ThreadsController {
             let createPostResult = await postsModel.createPost(postData, thread, user);
             if (createPostResult.isSuccess) {
                 postsResult.push(createPostResult.data);
+            } else if (createPostResult.message === '409') {
+                return res.status(409).json({message: "Can't create post this parent in a different thread."});
             } else {
                 return res.status(400).end();
             }
