@@ -25,38 +25,34 @@ export default new class ThreadsController {
             thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
         }
         thread.id = Number(thread.id);
-        console.log('thread: ', thread);
 
-        console.log('POSTS DATA: ', postsData);
         let postsResult = [];
-
         let createdDatetime = new Date();
-
         for (let postData of postsData) {
-
             // TODO: add transaction, add batch query ?
-
             let user = await usersModel.getUserByNickname(postData.author);
             if (!user) {
                 return res.status(404).json({message: "Can't find user with nickname " + postData.author});
             }
-            console.log('user: ', user);
-
 
             postData['created'] = createdDatetime;
-            console.log('post data: ', postData);
 
             let createPostResult = await postsModel.createPost(postData, thread, user);
-            console.log('createPostResult', createPostResult);
             if (createPostResult.isSuccess) {
                 postsResult.push(createPostResult.data);
             } else {
                 return res.status(400).end();
             }
-            console.log('posts result now: ', postsResult);
         }
 
-        console.log('posts RESULT: ', postsResult);
+        if (postsData.length > 0) {
+            let addPostsResult = await forumsModel.addPostsToForum(thread.forum_id, postsData.length);
+            console.log('addPostsResult: ', addPostsResult);
+            if (!addPostsResult.isSuccess) {
+                return res.status(500).end();
+            }
+        }
+
         res.status(201).json(postsSerializer.serialize_posts(postsResult));
     }
 
@@ -114,9 +110,45 @@ export default new class ThreadsController {
         res.json(threadsSerializer.serialize_thread(thread));
     }
 
+    async updateThreadDetails(req, res) {
+        let newThreadData = req.body;
+
+        let thread;
+        if (/^\d+$/.test(req.params['slug_or_id'])) {
+            thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
+        } else {
+            thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
+        }
+
+        if (!thread) {
+            return res.status(404).json({message: "Can't find forum with slug or id " + req.params['slug_or_id']});
+        }
+
+        console.log('thread exists');
+        let updatedThread = await threadsModel.updateThread(thread.id, newThreadData);
+        console.log('updated thread res: ', updatedThread);
+
+        if (!updatedThread) {
+            console.log('thread no if');
+            return res.status(409).json({ message: "Can't change thread with id " + id });
+        }
+
+        console.log('OK updated');
+        if (updatedThread === true) {
+            console.log('in empty update');
+            res.json(threadsSerializer.serialize_thread(thread));
+        } else {
+            console.log('in ok update');
+            res.json(threadsSerializer.serialize_thread(updatedThread));
+        }
+
+    }
+
     async getThreadPosts(req, res) {
         let getParams = [];
+        getParams['desc'] = req.query.desc === 'true';
         getParams['limit'] = req.query.limit ? parseInt(req.query.limit) : 100;
+        getParams['since'] = Number(req.query.since);
         console.log('get params for get thread posts: ', getParams);
 
         let thread;
@@ -131,16 +163,19 @@ export default new class ThreadsController {
         }
 
         let postsResult;
+        console.log('SORT PARAM: ', req.query.sort);
         switch (req.query.sort) {
             case 'tree':
                 console.log('TREE SORT');
-                postsResult = await postsModel.getPostsByThreadIdTree(thread.id, getParams);
+                postsResult = await postsModel.getPostsByThreadIdTreeSort(thread.id, getParams);
                 break;
-            case 'parent-tree':
-                return res.status(404).end();
+            case 'parent_tree':
+                console.log('PARENT TREE SORT');
+                postsResult = await postsModel.getPostsByThreadIdParentTreeSort(thread.id, getParams);
+                break;
             default:
                 console.log('FLAT SORT');
-                postsResult = await postsModel.getPostsByThreadIdFlat(thread.id, getParams);
+                postsResult = await postsModel.getPostsByThreadIdFlatSort(thread.id, getParams);
         }
         res.json(postsSerializer.serialize_posts(postsResult));
     }

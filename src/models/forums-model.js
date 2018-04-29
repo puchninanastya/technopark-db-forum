@@ -73,4 +73,46 @@ export default new class ForumsModel {
         }
     }
 
+    async addPostsToForum(id, posts_num) {
+        let result = {
+            isSuccess: false,
+            message: '',
+            data: null
+        };
+        try {
+            const updatePostsQuery = new PQ(`UPDATE forums SET 
+                posts = posts + $1
+                WHERE id = $2
+                RETURNING *`);
+            updatePostsQuery.values = [posts_num, id];
+            result.data = await this._dbContext.db.one(updatePostsQuery);
+            result.isSuccess = true;
+        } catch (error) {
+            result.message = error.message;
+            console.log('ERROR: ', error.message || error);
+        }
+        return result;
+    }
+
+    async addThreadsToForum(id, threads_num = 1) {
+        let result = {
+            isSuccess: false,
+            message: '',
+            data: null
+        };
+        try {
+            const updateThreadsQuery = new PQ(`UPDATE forums SET 
+                threads = threads + $1
+                WHERE id = $2
+                RETURNING *`);
+            updateThreadsQuery.values = [threads_num, id];
+            result.data = await this._dbContext.db.one(updateThreadsQuery);
+            result.isSuccess = true;
+        } catch (error) {
+            result.message = error.message;
+            console.log('ERROR: ', error.message || error);
+        }
+        return result;
+    }
+
 }

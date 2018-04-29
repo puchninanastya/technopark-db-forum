@@ -4,6 +4,7 @@
  */
 
 import dbConfig from '../db-config';
+import {column_with_skip} from "../utils/db-helpers";
 const PQ = require('pg-promise').ParameterizedQuery;
 
 /** Class representing an Threads model. */
@@ -14,6 +15,11 @@ export default new class ThreadsModel {
      */
     constructor() {
         this._dbContext = dbConfig;
+
+        // Creating a reusable ColumnSet for all updates:
+        this._updateThreadCS = new  this._dbContext.pgp.helpers.ColumnSet([
+            column_with_skip('message'), column_with_skip('title')
+        ], {table: 'threads'});
     }
 
     /**
@@ -80,6 +86,24 @@ export default new class ThreadsModel {
             console.log('ERROR: ', error.message || error);
         }
     }
+
+    async updateThread(id, threadData) {
+        try {
+            let updateThreadQuery = this._dbContext.pgp.helpers.update(threadData, this._updateThreadCS,
+                null, {emptyUpdate: true});
+            if (updateThreadQuery === true) {
+                return true;
+            } else {
+                updateThreadQuery += " WHERE \"id\" = \'" +  id + "\' RETURNING *";
+            }
+            console.log('updateThreadQuery: ', updateThreadQuery);
+            return await this._dbContext.db.oneOrNone(updateThreadQuery);
+        }
+        catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
 
     /**
      * Get threads by forum slug.

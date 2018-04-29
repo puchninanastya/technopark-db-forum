@@ -1,5 +1,4 @@
 CREATE EXTENSION IF NOT EXISTS CITEXT;
-CREATE EXTENSION IF NOT EXISTS LTREE;
 
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS forums CASCADE;
@@ -50,7 +49,7 @@ CREATE TABLE IF NOT EXISTS posts (
     isEdited            BOOLEAN                     DEFAULT FALSE,
     message             VARCHAR                     NOT NULL,
     parent              BIGINT                      NULL REFERENCES posts(id),
-    path_to_this_post   LTREE
+    path_to_this_post   BIGINT                      ARRAY
 );
 
 CREATE TABLE IF NOT EXISTS votes (
@@ -64,14 +63,14 @@ CREATE TABLE IF NOT EXISTS votes (
 
 CREATE OR REPLACE FUNCTION add_path_to_post() RETURNS TRIGGER AS $add_path_to_post$
     DECLARE
-        parent_path ltree;
+        parent_path BIGINT[];
     BEGIN
         IF (NEW.parent IS NULL) OR (NEW.parent = 0) THEN
-            NEW.path_to_this_post := NEW.id;
+            NEW.path_to_this_post := NEW.path_to_this_post || NEW.id;
         ELSE
             SELECT path_to_this_post FROM posts
                 WHERE id = NEW.parent INTO parent_path;
-            NEW.path_to_this_post := parent_path || (NEW.id::text);
+            NEW.path_to_this_post := NEW.path_to_this_post || parent_path || NEW.id;
         END IF;
         RETURN NEW;
     END;
@@ -80,5 +79,3 @@ $add_path_to_post$ LANGUAGE  plpgsql;
 DROP TRIGGER IF EXISTS tr_add_path_to_post ON posts;
 
 CREATE TRIGGER tr_add_path_to_post BEFORE INSERT ON posts FOR EACH ROW EXECUTE PROCEDURE add_path_to_post();
-
-CREATE INDEX idx_post_path ON posts USING GIST (path_to_this_post);

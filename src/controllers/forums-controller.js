@@ -39,7 +39,8 @@ export default new class ForumsController {
             return res.status(404).json({message: "Can't find forum with slug " + slug});
         }
 
-        res.json({slug: existingForum.slug, title: existingForum.title, user: existingForum.owner_nickname});
+        res.json({slug: existingForum.slug, title: existingForum.title, user: existingForum.owner_nickname,
+                posts: existingForum.posts, threads: existingForum.threads });
     }
 
     async createThreadForForum(req, res) {
@@ -67,6 +68,13 @@ export default new class ForumsController {
 
         let createThreadResult = await threadsModel.createThread(threadData, user, forum);
         if (createThreadResult.isSuccess) {
+
+            let addThreadResult = await forumsModel.addThreadsToForum(createThreadResult.data.forum_id);
+            console.log('addThreadResult: ', addThreadResult);
+            if (!addThreadResult.isSuccess) {
+                return res.status(500).end();
+            }
+
             res.status(201).json(threadsSerializer.serialize_thread(createThreadResult.data));
         } else {
             res.status(500).end();
@@ -89,4 +97,5 @@ export default new class ForumsController {
         let threads = await threadsModel.getThreadsByForumSlug(forumSlug, getParams);
         res.json(threadsSerializer.serialize_threads(threads));
     }
+
 }
