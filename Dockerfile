@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM node:latest
 
 MAINTAINER Puchnina Anastasiya
 
@@ -41,20 +41,11 @@ USER root
 # Сборка проекта
 #
 
-# Create app directory
-WORKDIR /usr/src/app
-
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-RUN apt-get install -y nodejs nodejs-legacy npm
-COPY package*.json ./
+COPY . /src
+WORKDIR /src
 
 RUN npm install
-
-# Bundle app source
-COPY . .
+RUN npm run webpack-dev
 
 # Объявлем порт сервера
 EXPOSE 5000
