@@ -26,6 +26,10 @@ export default new class PostsController {
             return res.status(404).json({message: "Can't find post with id " + postId});
         }
 
+        if (!req.body.message || req.body.message === existingPost.message) {
+            return res.json(postsSerializer.serialize_post(existingPost));
+        }
+
         let updatedPost = await postsModel.updatePost(postId, req.body);
         if (!updatedPost.isSuccess) {
             return res.status(500).json({ message: "Can't change post with id " + postId });
