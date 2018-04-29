@@ -75,12 +75,12 @@ export default new class ThreadsModel {
                 threadData.created, threadData.title, threadData.message];
             result.data = await this._dbContext.db.one(createThreadQuery);
             // Add this user for forum's users table if not exists
-            console.log('INSERT IN FORUM_USERS:', await this._dbContext.db.oneOrNone(`
+            await this._dbContext.db.oneOrNone(`
             INSERT INTO forum_users (forum_id, user_id)
                 VALUES ($1, $2)
                 ON CONFLICT ON CONSTRAINT unique_user_in_forum DO NOTHING
                 RETURNING *`,
-                [forum.id, user.id]));
+                [forum.id, user.id]);
             result.isSuccess = true;
         } catch (error) {
             result.message = error.message;

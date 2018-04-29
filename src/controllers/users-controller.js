@@ -35,28 +35,19 @@ export default new class UsersController {
         let userData = req.body;
 
         let existingUser = await usersModel.getUserByNickname(nickname);
-        console.log('get user res:', existingUser);
 
         if (!existingUser) {
-            console.log('user not found');
             return res.status(404).json({ message: "Can't find user with nickname " + nickname });
         }
 
-        console.log('user exists');
         let updatedUser = await usersModel.updateUser(nickname, userData);
-        console.log('updated user res: ', updatedUser);
-
         if (!updatedUser) {
-            console.log('user no if');
             return res.status(409).json({ message: "Can't change user with nickname " + nickname });
         }
 
-        console.log('OK updated');
         if (updatedUser === true) {
-            console.log('in empty update');
             res.json(existingUser);
         } else {
-            console.log('in ok update');
             res.json(updatedUser);
         }
 

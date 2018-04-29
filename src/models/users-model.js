@@ -159,7 +159,6 @@ export default new class UsersModel {
             } else {
                 updateUserQuery += " WHERE \"nickname\" = \'" +  nickname + "\' RETURNING *";
             }
-            console.log('updateUserQuery: ', updateUserQuery);
             return await this._dbContext.db.oneOrNone(updateUserQuery);
         }
         catch (error) {

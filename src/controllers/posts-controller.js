@@ -31,7 +31,6 @@ export default new class PostsController {
             return res.status(500).json({ message: "Can't change post with id " + postId });
         }
 
-        console.log('updated post: ', updatedPost.data);
         res.json(postsSerializer.serialize_post(updatedPost.data));
     }
 

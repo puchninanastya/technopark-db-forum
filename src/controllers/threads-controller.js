@@ -14,10 +14,8 @@ export default new class ThreadsController {
 
         let thread;
         if (/^\d+$/.test(req.params['slug_or_id'])) {
-            console.log('in thread id');
             thread = await threadsModel.getThreadById(Number(req.params['slug_or_id']));
         } else {
-            console.log('in thread slug');
             thread = await threadsModel.getThreadBySlug(req.params['slug_or_id']);
         }
         if (!thread) {
@@ -54,7 +52,6 @@ export default new class ThreadsController {
 
         if (postsData.length > 0) {
             let addPostsResult = await forumsModel.addPostsToForum(thread.forum_id, postsData.length);
-            console.log('addPostsResult: ', addPostsResult);
             if (!addPostsResult.isSuccess) {
                 return res.status(500).end();
             }
@@ -131,21 +128,14 @@ export default new class ThreadsController {
             return res.status(404).json({message: "Can't find forum with slug or id " + req.params['slug_or_id']});
         }
 
-        console.log('thread exists');
         let updatedThread = await threadsModel.updateThread(thread.id, newThreadData);
-        console.log('updated thread res: ', updatedThread);
-
         if (!updatedThread) {
-            console.log('thread no if');
             return res.status(409).json({ message: "Can't change thread with id " + id });
         }
 
-        console.log('OK updated');
         if (updatedThread === true) {
-            console.log('in empty update');
             res.json(threadsSerializer.serialize_thread(thread));
         } else {
-            console.log('in ok update');
             res.json(threadsSerializer.serialize_thread(updatedThread));
         }
 
@@ -156,7 +146,6 @@ export default new class ThreadsController {
         getParams['desc'] = req.query.desc === 'true';
         getParams['limit'] = req.query.limit ? parseInt(req.query.limit) : 100;
         getParams['since'] = Number(req.query.since);
-        console.log('get params for get thread posts: ', getParams);
 
         let thread;
         if (/^\d+$/.test(req.params['slug_or_id'])) {
@@ -170,18 +159,14 @@ export default new class ThreadsController {
         }
 
         let postsResult;
-        console.log('SORT PARAM: ', req.query.sort);
         switch (req.query.sort) {
             case 'tree':
-                console.log('TREE SORT');
                 postsResult = await postsModel.getPostsByThreadIdTreeSort(thread.id, getParams);
                 break;
             case 'parent_tree':
-                console.log('PARENT TREE SORT');
                 postsResult = await postsModel.getPostsByThreadIdParentTreeSort(thread.id, getParams);
                 break;
             default:
-                console.log('FLAT SORT');
                 postsResult = await postsModel.getPostsByThreadIdFlatSort(thread.id, getParams);
         }
         res.json(postsSerializer.serialize_posts(postsResult));

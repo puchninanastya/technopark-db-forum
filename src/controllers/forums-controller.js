@@ -70,7 +70,6 @@ export default new class ForumsController {
         if (createThreadResult.isSuccess) {
 
             let addThreadResult = await forumsModel.addThreadsToForum(createThreadResult.data.forum_id);
-            console.log('addThreadResult: ', addThreadResult);
             if (!addThreadResult.isSuccess) {
                 return res.status(500).end();
             }
@@ -105,10 +104,8 @@ export default new class ForumsController {
         getParams['desc'] = req.query.desc === 'true';
         getParams['limit'] = req.query.limit ? parseInt(req.query.limit) : 100;
         getParams['since'] = req.query.since;
-        console.log('getParams: ', getParams);
 
         let existingForum = await forumsModel.getForumBySlug(forumSlug);
-        console.log('existingForum: ', existingForum);
         if (!existingForum) {
             return res.status(404).json({message: "Can't find forum with slug " + forumSlug});
         }

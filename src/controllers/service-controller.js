@@ -13,9 +13,6 @@ export default new class ServiceController {
         let threads = await threadsModel.countAllThreads();
         let posts = await postsModel.countAllPosts();
 
-        console.log('forums: ', forums);
-        console.log('users: ', users);
-
         res.json({  user: users ? Number(users.count)        : 0,
                     forum: forums ? Number(forums.count)     : 0,
                     thread: threads ? Number(threads.count)  : 0,
