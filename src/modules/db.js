@@ -20,8 +20,8 @@ export default class DatabaseModule {
         this._pgp = pgp;
         this._db = pgp(connOptions); // database instance
 
-        this._dropAndCreateSql = this.sql('./db/drop_and_create.sql');
-        this.initializeDatabase();
+        //this._dropAndCreateSql = this.sql('./db/drop_and_create.sql');
+        //this.initializeDatabase();
     }
 
     get db() {
