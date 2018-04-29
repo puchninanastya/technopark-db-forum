@@ -35,7 +35,7 @@ export default new class PostsController {
                 }
             }
         }
-        
+
         res.json(result);
     }
 
