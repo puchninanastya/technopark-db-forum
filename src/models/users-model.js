@@ -77,6 +77,21 @@ export default new class UsersModel {
     }
 
     /**
+     * Get user by id.
+     * @param id - user's id
+     * @return user's object if user with such id exists
+     * @return empty object if no users with such id
+     */
+    async getUserById(id) {
+        try {
+            const getUserQuery = new PQ(`SELECT * FROM users WHERE id = $1`, [id]);
+            return await this._dbContext.db.oneOrNone(getUserQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Get users by nickname or email.
      * @param nickname - user's nickname
      * @param email - user's email

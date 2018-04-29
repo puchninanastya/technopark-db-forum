@@ -67,6 +67,22 @@ export default new class ForumsModel {
     }
 
     /**
+     * Get forum by id.
+     * @param id - forum's id
+     * @return forum's object if forum with such id exists
+     * @return empty object if no forums with such id
+     */
+    async getForumById(id) {
+        try {
+            const getForumQuery = new PQ(`SELECT * FROM forums WHERE id = $1`, [id]);
+            return await this._dbContext.db.oneOrNone(getForumQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+
+    /**
      * Get forum by slug.
      * @param slug - forum's slug (human-readable name for url)
      * @return forum's object if forum with such slug exists

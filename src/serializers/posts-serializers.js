@@ -11,7 +11,7 @@ export default new class PostsSerializer {
      * @param post - object to serialize
      * @return Object - serialized post object
      */
-    serialize_post(post, showAsDetail = false) {
+    serialize_post(post) {
         let postResult = {
             id: Number(post.id), author: post.author_nickname,
             forum: post.forum_slug, thread: Number(post.thread_id),
@@ -21,9 +21,6 @@ export default new class PostsSerializer {
         if (post.parent !== post.id) {
             postResult.parent = Number(post.parent);
             postResult.path = post.path_to_this_post;
-        }
-        if (showAsDetail) {
-            postResult = {post: postResult};
         }
         return postResult;
     }
