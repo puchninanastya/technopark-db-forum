@@ -1,4 +1,4 @@
-FROM node:latest
+FROM ubuntu:16.04
 
 MAINTAINER Puchnina Anastasiya
 
@@ -8,7 +8,7 @@ RUN apt-get -y update
 #
 # Установка postgresql
 #
-ENV PGVER 10
+ENV PGVER 9.5
 RUN apt-get install -y postgresql-$PGVER
 
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-$PGVER`` package when it was ``apt-get installed``
