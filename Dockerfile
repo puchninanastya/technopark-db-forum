@@ -42,7 +42,7 @@ USER root
 #
 
 RUN apt-get install -y curl
-RUN curl —silent —location https://deb.nodesource.com/setup_6.x | bash -
+RUN curl —silent —location https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 RUN apt-get install -y build-essential
 
