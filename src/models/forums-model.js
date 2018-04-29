@@ -17,6 +17,30 @@ export default new class ForumsModel {
     }
 
     /**
+     * Count all forums.
+     * @return forums amount
+     * @return empty object if no forums
+     */
+    async countAllForums() {
+        try {
+            return await this._dbContext.db.one(`SELECT count(*) FROM forums`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
+     * Truncate all forums.
+     */
+    async truncateAllForums() {
+        try {
+            return await this._dbContext.db.none(`TRUNCATE forums CASCADE`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Add new forum.
      * @param forumData - object of forum data
      * @param userData - forum owner's user object

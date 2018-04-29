@@ -23,6 +23,20 @@ export default new class ThreadsModel {
     }
 
     /**
+     * Count all threads.
+     * @return threads amount
+     * @return empty object if no threads
+     */
+    async countAllThreads() {
+        try {
+            const countThreadsQuery = new PQ(`SELECT count(*) FROM threads`);
+            return await this._dbContext.db.one(countThreadsQuery);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Add new thread to forum.
      * @param threadData - object of thread data
      * @param user - thread's author object

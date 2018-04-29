@@ -27,6 +27,30 @@ export default new class UsersModel {
     }
 
     /**
+     * Count all users.
+     * @return users amount
+     * @return empty object if no users
+     */
+    async countAllUsers() {
+        try {
+            return await this._dbContext.db.one(`SELECT count(*) FROM users`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
+     * Truncate all users.
+     */
+    async truncateAllUsers() {
+        try {
+            return await this._dbContext.db.none(`TRUNCATE users CASCADE`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Add new user.
      * @param nickname - user's nickname
      * @param userData - object of additional user data

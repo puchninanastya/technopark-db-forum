@@ -18,6 +18,30 @@ export default new class PostsModel {
     }
 
     /**
+     * Count all posts.
+     * @return posts amount
+     * @return empty object if no posts
+     */
+    async countAllPosts() {
+        try {
+            return await this._dbContext.db.one(`SELECT count(*) FROM posts`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
+     * Truncate all posts.
+     */
+    async truncateAllPosts() {
+        try {
+            return await this._dbContext.db.none(`TRUNCATE posts CASCADE`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Add new post to thread.
      */
     async createPost(postData, thread, user) {
