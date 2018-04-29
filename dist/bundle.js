@@ -157,7 +157,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mod
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_db__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/db */ \"./src/modules/db.js\");\n/**\n * Database configuration for database module\n */\n\n\n\n// Database connection details;\nconst connOptions = {\n    host: 'localhost', // localhost is the default\n    port: 5433, // 5432 is the default;\n    database: 'docker',\n    user: 'docker',\n    password: 'docker'\n};\n\nlet dbConfig = new _modules_db__WEBPACK_IMPORTED_MODULE_0__[\"default\"](connOptions);\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (dbConfig);\n\n\n//# sourceURL=webpack:///./src/db-config.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_db__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/db */ \"./src/modules/db.js\");\n/**\n * Database configuration for database module\n */\n\n\n\n// Database connection details;\nconst connOptions = {\n    host: 'localhost', // localhost is the default\n    port: 5432, // 5432 is the default;\n    database: 'docker',\n    user: 'docker',\n    password: 'docker'\n};\n\nlet dbConfig = new _modules_db__WEBPACK_IMPORTED_MODULE_0__[\"default\"](connOptions);\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (dbConfig);\n\n\n//# sourceURL=webpack:///./src/db-config.js?");
 
 /***/ }),
 
