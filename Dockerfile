@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:17.10
 
 MAINTAINER Puchnina Anastasiya
 
@@ -47,7 +47,6 @@ COPY . /src
 WORKDIR /src
 
 RUN npm install
-RUN npm run webpack-dev
 
 # Объявлем порт сервера
 EXPOSE 5000
