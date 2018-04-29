@@ -2,6 +2,7 @@ import forumsModel from '../models/forums-model';
 import usersModel from '../models/users-model';
 import threadsModel from '../models/threads-model';
 import postsModel from '../models/posts-model';
+import votesModel from '../models/votes-model';
 
 export default new class ServiceController {
 
@@ -27,6 +28,7 @@ export default new class ServiceController {
         await forumsModel.truncateAllForums();
         await threadsModel.truncateAllThreads();
         await postsModel.truncateAllPosts();
+        await votesModel.truncateAllVotes();
 
         res.end();
     }

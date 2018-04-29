@@ -37,6 +37,17 @@ export default new class ThreadsModel {
     }
 
     /**
+     * Truncate all threads.
+     */
+    async truncateAllThreads() {
+        try {
+            return await this._dbContext.db.none(`TRUNCATE threads CASCADE`);
+        } catch (error) {
+            console.log('ERROR: ', error.message || error);
+        }
+    }
+
+    /**
      * Add new thread to forum.
      * @param threadData - object of thread data
      * @param user - thread's author object
