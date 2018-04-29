@@ -33,7 +33,7 @@ export default class DatabaseModule {
 
     async initializeDatabase() {
         try {
-            await db.any(this._dropAndCreateSql);
+            await this._db.any(this._dropAndCreateSql);
         } catch (error) {
             if (error instanceof this._pgp.errors.QueryFileError) {
                 console.error('ERROR: ', error);
