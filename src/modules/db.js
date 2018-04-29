@@ -21,6 +21,7 @@ export default class DatabaseModule {
         this._db = pgp(connOptions); // database instance
 
         this._dropAndCreateSql = this.sql('./db/drop_and_create.sql');
+        this.initializeDatabase();
     }
 
     get db() {
@@ -31,20 +32,22 @@ export default class DatabaseModule {
         return this._pgp;
     }
 
-    async initializeDatabase() {
-        try {
-            await this._db.any(this._dropAndCreateSql);
-        } catch (error) {
-            if (error instanceof this._pgp.errors.QueryFileError) {
-                console.error('ERROR: ', error);
-            }
-        }
+    initializeDatabase() {
+        this._db.any(this._dropAndCreateSql)
+            .then(() => {
+                console.log('db initialized');
+            })
+            .catch(error => {
+                if (error instanceof pgp.errors.QueryFileError) {
+                    console.error('db is not initialized!');
+                }
+            });
     }
 
     // Helper for linking to external query files:
     sql(file) {
         const fullPath = path.join(__dirname, file);
-        return new pgp.QueryFile(fullPath, {minify: true});
+        return new this._pgp.QueryFile(fullPath, {minify: true});
     }
 
 }
